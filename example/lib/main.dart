@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:papagaio_tts/papagaio_tts.dart';
 
 void main() {
@@ -16,47 +14,84 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
-  final _papagaioTtsPlugin = PapagaioTts();
+  List<String> _voices = [];
+  final _papSttDemoPlugin = PapagaioTts();
+  bool _isSpeaking = false;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    getVoiceOptions();
+    checkSpeakingStatus();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await _papagaioTtsPlugin.getPlatformVersion() ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+  Future<void> checkSpeakingStatus() async {
+    Timer.periodic(Duration(milliseconds: 500), (timer) {
+      getSpeakingStatus();
+    });
+  }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+  Future<void> getVoiceOptions() async {
+    List<String> voices = await _papSttDemoPlugin.getVoices();
 
     setState(() {
-      _platformVersion = platformVersion;
+      _voices = voices;
+    });
+  }
+
+  void onVoiceSelected(String voiceName) {
+    print("#### main voiceName ${voiceName}");
+    _papSttDemoPlugin.setVoice(voiceName);
+  }
+
+  Future<void> speak(String text) async {
+    await _papSttDemoPlugin.speak(text);
+  }
+
+  Future<void> getSpeakingStatus() async {
+    bool isSpeaking = await _papSttDemoPlugin.getSpeakingStatus();
+    setState(() {
+      _isSpeaking = isSpeaking;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
+    List<DropdownMenuEntry<String>> entry =
+        _voices.map((v) => DropdownMenuEntry(value: v, label: v)).toList();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+            child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+              DropdownMenu<String>(
+                  width: width - 20,
+                  menuHeight: height / 2,
+                  label: const Text("Voice type"),
+                  enableFilter: true,
+                  dropdownMenuEntries: entry,
+                  onSelected: (str) {
+                    onVoiceSelected(str ?? "");
+                  }),
+              ElevatedButton(
+                  onPressed: () =>
+                      speak("Hello, this is test of speaking status. "),
+                  child: Text("Speak")),
+              // ElevatedButton(onPressed: () => getSpeakingStatus(), child: Text("Get Status")),
+              Text(
+                _isSpeaking ? "Speaking" : "Waiting to speak",
+                textAlign: TextAlign.center,
+              )
+            ])),
       ),
     );
   }
