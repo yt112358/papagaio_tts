@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:papagaio_tts/papagaio_tts.dart';
 import 'dart:ffi';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -20,14 +19,18 @@ class _MyAppState extends State<MyApp> {
   final _papagaioTtsPlugin = PapagaioTts();
   bool _isSpeaking = false;
 
+  String _currentLanguage = "";
+  String _currentVoice = "";
   double _rate = 0.5;
   double _volume = 1.0;
   double _pitch = 0.5;
 
+  String _frase = "Test";
+
   @override
   void initState() {
     super.initState();
-    getVoiceOptions();
+    getConfigurations();
     checkSpeakingStatus();
   }
 
@@ -37,16 +40,37 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  Future<void> getVoiceOptions() async {
+  Future<void> getConfigurations() async {
     List<String> voices = await _papagaioTtsPlugin.getVoices();
+    String currentLanguage = await _papagaioTtsPlugin.getLanguage();
+    String currentVoice = await _papagaioTtsPlugin.getVoice();
+    double rate = await _papagaioTtsPlugin.getRate() as double;
+    double volume = await _papagaioTtsPlugin.getVolume() as double;
+    double pitch = await _papagaioTtsPlugin.getPitch() as double;
 
     setState(() {
       _voices = voices;
+      _currentLanguage = currentLanguage;
+      _currentVoice = currentVoice;
+      _rate = rate;
+      _volume = volume;
+      _pitch = pitch;
+      _frase = currentLanguage == "en-US"
+          ? "Hello, this is test of speaking status. "
+          : "こんにちは。こちらはスピーキングのテストです。";
     });
   }
 
   Future<void> speak(String text) async {
+    String currentVoice = await _papagaioTtsPlugin.getVoice();
+    setState(() {
+      _currentVoice = currentVoice;
+    });
     await _papagaioTtsPlugin.speak(text);
+  }
+
+  Future<void> stop() async {
+    await _papagaioTtsPlugin.stop();
   }
 
   Future<void> getSpeakingStatus() async {
@@ -62,11 +86,17 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> onLanguageSelected(String language) async {
     await _papagaioTtsPlugin.setLanguage(language);
+    String currentVoice = await _papagaioTtsPlugin.getVoice();
+    print("currentVoice $currentVoice");
     List<String> voices = await _papagaioTtsPlugin.getVoices();
     setState(() {
       _voices = voices;
+      _currentVoice = currentVoice;
+      _frase = language == "en-US"
+          ? "Hello, this is test of speaking status. "
+          : "こんにちは。こちらはスピーキングのテストです。";
     });
-    voices.forEach((element) {print("voice $element.name");});
+    // voices.forEach((element) {print("voice $element.name");});
   }
 
   void onChangeRate(num rate) {
@@ -83,9 +113,9 @@ class _MyAppState extends State<MyApp> {
 
   void setVolume(double changeValue) {
     double after = double.parse((_volume + changeValue).toStringAsFixed(1));
-    if(after < 0) {
+    if (after < 0) {
       after = 0.0;
-    } else if(after > 1.0) {
+    } else if (after > 1.0) {
       after = 1.0;
     }
     setState(() {
@@ -96,9 +126,9 @@ class _MyAppState extends State<MyApp> {
 
   void setRate(double changeValue) {
     double after = double.parse((_rate + changeValue).toStringAsFixed(1));
-    if(after < 0) {
+    if (after < 0) {
       after = 0.0;
-    } else if(after > 1.0) {
+    } else if (after > 1.0) {
       after = 1.0;
     }
     setState(() {
@@ -109,9 +139,9 @@ class _MyAppState extends State<MyApp> {
 
   void setPitch(double changeValue) {
     double after = double.parse((_pitch + changeValue).toStringAsFixed(1));
-    if(after < 0) {
+    if (after < 0) {
       after = 0.0;
-    } else if(after > 1.0) {
+    } else if (after > 1.0) {
       after = 1.0;
     }
     setState(() {
@@ -138,52 +168,64 @@ class _MyAppState extends State<MyApp> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-              ElevatedButton(
-                  style: const ButtonStyle(
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  onPressed: () =>
-                      speak("Hello, this is test of speaking status. "),
-                  child: const Text("Speak", style: TextStyle(fontSize: 20))),
-              // ElevatedButton(onPressed: () => getSpeakingStatus(), child: Text("Get Status")),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                        style: const ButtonStyle(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                        onPressed: (_currentVoice.isEmpty || _isSpeaking)
+                            ? null
+                            : () => speak(_frase),
+                        child: const Text("Speak",
+                            style: TextStyle(fontSize: 20))),
+                    ElevatedButton(
+                        style: const ButtonStyle(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                        onPressed: _isSpeaking ? () => stop() : null,
+                        child:
+                            const Text("Stop", style: TextStyle(fontSize: 20))),
+                  ]),
               Text(
                 _isSpeaking ? "Speaking" : "Waiting to speak",
                 textAlign: TextAlign.center,
               ),
-
               SizedBox(height: 50),
-
               const Text("Configuration"),
-
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(width: width / 3, child: const Text("Language")),
-              DropdownMenu<String>(
-                  width: width / 3,
-                  menuHeight: height / 2,
-                  enableFilter: true,
-                  dropdownMenuEntries: const [DropdownMenuEntry(value: "en-US", label: "English"), DropdownMenuEntry(value: "ja", label: "Japanese")],
-                  onSelected: (str) {
-                    onLanguageSelected(str ?? "ja-JP");
-                  }),
-                ]),
-
+                  children: [
+                    SizedBox(width: width / 3, child: const Text("Language")),
+                    DropdownMenu<String>(
+                        width: width / 3,
+                        menuHeight: height / 2,
+                        enableFilter: false,
+                        initialSelection: _currentLanguage,
+                        dropdownMenuEntries: const [
+                          DropdownMenuEntry(value: "en-US", label: "English"),
+                          DropdownMenuEntry(value: "ja-JP", label: "Japanese")
+                        ],
+                        onSelected: (str) {
+                          onLanguageSelected(str ?? "");
+                        }),
+                  ]),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(width: width / 3, child: const Text("Voice")),
-              DropdownMenu<String>(
-                  width: width / 3,
-                  menuHeight: height / 2,
-                  enableFilter: true,
-                  dropdownMenuEntries: entry,
-                  onSelected: (str) {
-                    onVoiceSelected(str ?? "");
-                  }),
-                ]),
-
+                  children: [
+                    SizedBox(width: width / 3, child: const Text("Voice")),
+                    DropdownMenu<String>(
+                        width: width / 3,
+                        menuHeight: height / 2,
+                        enableFilter: true,
+                        initialSelection: _currentVoice,
+                        dropdownMenuEntries: entry,
+                        onSelected: (str) {
+                          onVoiceSelected(str ?? "");
+                        }),
+                  ]),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -231,7 +273,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     super.dispose();
-    // TODO  終了処理
-    // PapagaioTts.stop()
+    _papagaioTtsPlugin.stop();
   }
 }

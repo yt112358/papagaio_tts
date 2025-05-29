@@ -18,10 +18,7 @@ class PapagaioTts: NSObject, ObservableObject{
     }
     
     func speak(_ text: String) {
-        print("volume \(self.volume)")
         synthesizer.stopSpeaking(at: .immediate)
-
-        print("language \(self.language)")
         
         if (language == nil) {
             language = "en-US"
@@ -46,17 +43,34 @@ class PapagaioTts: NSObject, ObservableObject{
         synthesizer.speak(speechUtterance)
     }
 
-    func getVoices()-> [String] {
-        let currentVoice: AVSpeechSynthesisVoice? = AVSpeechSynthesisVoice.init(language: "en-US")  // TODO
-        self.voice = currentVoice
-        let voices = AVSpeechSynthesisVoice.speechVoices()
-        let list: [String] = voices.map { $0.name }
+    func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+    }
 
+    func getVoices()-> [String] {
+        let voices: [AVSpeechSynthesisVoice] = AVSpeechSynthesisVoice.speechVoices()
+        let list: [String] = voices.filter { $0.language == language } .map { $0.name }
         return list
     }
 
     func getSpeakingStatus() -> Bool {
         return self.isSpeaking
+    }
+
+    func getLanguage() -> String {
+        return self.language ?? "" as! String
+    }
+    func getVoice() -> String {
+        return self.voice?.name ?? ""
+    }
+    func getRate() -> Float {
+        return self.rate ?? 0.5 as Float
+    }
+    func getVolume() -> Float {
+        return self.volume ?? 1.0 as Float
+    }
+    func getPitch() -> Float {
+        return self.pitch ?? 0.5 as Float
     }
 
     func setVoice(_ voice: String) {
@@ -71,12 +85,11 @@ class PapagaioTts: NSObject, ObservableObject{
 
     func setLanuguage(_ language: String) {
         self.language = language
+        self.voice = AVSpeechSynthesisVoice.init(language: language)
     }
 
     func setVolume(_ volume: Float) {
-        print("### setVolume")
         self.volume = volume
-        print("### volume2 \(volume)")
     }
 
     func setPitch(_ pitch: Float) {

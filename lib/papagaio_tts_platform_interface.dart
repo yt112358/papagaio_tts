@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'papagaio_tts_method_channel.dart';
 
@@ -25,8 +23,32 @@ abstract class PapagaioTtsPlatform extends PlatformInterface {
     throw UnimplementedError('speak() has not been implemented.');
   }
 
+  Future<void> stop() {
+    throw UnimplementedError('stop() has not been implemented.');
+  }
+
   Future<bool> getSpeakingStatus() {
     throw UnimplementedError('getSpeakingStatus() has not been implemented.');
+  }
+
+  Future<String> getLanguage() {
+    throw UnimplementedError('getLanguage() has not been implemented.');
+  }
+
+  Future<String> getVoice() {
+    throw UnimplementedError('getVoice() has not been implemented.');
+  }
+
+  Future<num> getRate() {
+    throw UnimplementedError('getRate() has not been implemented.');
+  }
+
+  Future<num> getVolume() {
+    throw UnimplementedError('getVolume() has not been implemented.');
+  }
+
+  Future<num> getPitch() {
+    throw UnimplementedError('getPitch() has not been implemented.');
   }
 
   Future<void> setVoice(String voiceName) {

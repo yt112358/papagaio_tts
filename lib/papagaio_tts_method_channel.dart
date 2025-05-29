@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'papagaio_tts_platform_interface.dart';
-import 'dart:ffi';
 
 /// An implementation of [PapagaioTtsPlatform] that uses method channels.
 class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
@@ -21,9 +20,34 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
     await methodChannel.invokeMethod<void>('speak', text);
   }
 
+  Future<void> stop() async {
+    await methodChannel.invokeMethod<void>('stop');
+  }
+
   Future<bool> getSpeakingStatus() async {
     final result = await methodChannel.invokeMethod<bool>('getSpeakingStatus');
     return Future<bool>.value(result);
+  }
+
+  Future<String> getLanguage() async {
+    final result = await methodChannel.invokeMethod<String>('getLanguage');
+    return Future<String>.value(result);
+  }
+  Future<String> getVoice() async {
+    final result = await methodChannel.invokeMethod<String>('getVoice');
+    return Future<String>.value(result);
+  }
+  Future<num> getRate() async {
+    final result = await methodChannel.invokeMethod<num>('getRate');
+    return Future<num>.value(result);
+  }
+  Future<num> getVolume() async {
+    final result = await methodChannel.invokeMethod<num>('getVolume');
+    return Future<num>.value(result);
+  }
+  Future<num> getPitch() async {
+    final result = await methodChannel.invokeMethod<num>('getPitch');
+    return Future<num>.value(result);
   }
 
   Future<void> setVoice(String voiceName) async {

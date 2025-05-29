@@ -16,10 +16,25 @@ public class PapagaioTtsPlugin: NSObject, FlutterPlugin {
       result(getVoices())
     case "speak":
       let text = call.arguments as! String
-      print("#### text \(text)")
       speak(text)
+    case "stop":
+      stop()
     case "getSpeakingStatus":
       result(getSpeakingStatus())
+
+    // Getters
+    case "getLanguage":
+      result(getLanguage())
+    case "getVoice":
+      result(getVoice())
+    case "getRate":
+      result(getRate())
+    case "getVolume":
+      result(getVolume())
+    case "getPitch":
+      result(getPitch())
+
+    // Setters
     case "setVoice":
       let voice = call.arguments as! String
       setVoice(voice)
@@ -49,9 +64,34 @@ public class PapagaioTtsPlugin: NSObject, FlutterPlugin {
     return tts.speak(text)
   }
 
+  func stop() {
+    return tts.stop()
+  }
+
   func getSpeakingStatus() -> Bool {
     return tts.getSpeakingStatus()
   }
+
+  func getVoice() -> String {
+    return tts.getVoice()
+  }
+
+  func getLanguage() -> String {
+    return tts.getLanguage()
+  }
+
+  func getRate() -> Float {
+    return tts.getRate()
+  }
+
+    func getVolume() -> Float {
+    return tts.getVolume()
+  }
+
+  func getPitch() -> Float {
+    return tts.getPitch()
+  }
+
 
   func setVoice(_ voice: String) {
     return tts.setVoice(voice)
