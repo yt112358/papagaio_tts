@@ -3,14 +3,12 @@ import 'package:papagaio_tts/papagaio_tts.dart';
 import 'package:papagaio_tts/papagaio_tts_platform_interface.dart';
 import 'package:papagaio_tts/papagaio_tts_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'dart:ffi';
 
 class MockPapagaioTtsPlatform
     with MockPlatformInterfaceMixin
     implements PapagaioTtsPlatform {
 
-  @override
-  Future<String?> getPlatformVersion() => Future.value('42');
-  
   @override
   Future<bool> getSpeakingStatus() {
     // TODO: implement getSpeakingStatus
@@ -32,6 +30,30 @@ class MockPapagaioTtsPlatform
   @override
   Future<void> speak(String text) {
     // TODO: implement speak
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> setLanguage(String language) {
+    // TODO: implement setLanguage
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> setPitch(Float pitch) {
+    // TODO: implement setPitch
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> setRate(Float rate) {
+    // TODO: implement setRate
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> setVolume(double volume) {
+    // TODO: implement setVolume
     throw UnimplementedError();
   }
 }
