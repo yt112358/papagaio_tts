@@ -1,4 +1,4 @@
-package com.example.papagaio_tts
+package papagaiojp.webnode.jp.papagaio_tts
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel

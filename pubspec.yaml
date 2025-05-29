@@ -35,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.example.papagaio_tts
+        package: papagaiojp.webnode.jp.papagaio_tts
         pluginClass: PapagaioTtsPlugin
       ios:
         pluginClass: PapagaioTtsPlugin
