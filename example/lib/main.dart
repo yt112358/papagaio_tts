@@ -31,12 +31,14 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     getConfigurations();
-    checkSpeakingStatus();
   }
 
   Future<void> checkSpeakingStatus() async {
-    Timer.periodic(Duration(milliseconds: 500), (timer) {
-      getSpeakingStatus();
+    Timer.periodic(Duration(milliseconds: 500), (timer) async {
+      bool status = await getSpeakingStatus();
+      if(!status) {
+        timer.cancel();
+      }
     });
   }
 
@@ -67,20 +69,23 @@ class _MyAppState extends State<MyApp> {
       _currentVoice = currentVoice;
     });
     await _papagaioTtsPlugin.speak(text);
+    checkSpeakingStatus();
   }
 
   Future<void> stop() async {
     await _papagaioTtsPlugin.stop();
   }
 
-  Future<void> getSpeakingStatus() async {
+  Future<bool> getSpeakingStatus() async {
     bool isSpeaking = await _papagaioTtsPlugin.getSpeakingStatus();
     setState(() {
       _isSpeaking = isSpeaking;
     });
+    return isSpeaking;
   }
 
   void onVoiceSelected(String voiceName) {
+    print("dart main ${voiceName} ${voiceName.runtimeType}");
     _papagaioTtsPlugin.setVoice(voiceName);
   }
 
@@ -204,8 +209,8 @@ class _MyAppState extends State<MyApp> {
                         enableFilter: false,
                         initialSelection: _currentLanguage,
                         dropdownMenuEntries: const [
-                          DropdownMenuEntry(value: "en-US", label: "English"),
-                          DropdownMenuEntry(value: "ja-JP", label: "Japanese")
+                          DropdownMenuEntry(value: "en_US", label: "English"),
+                          DropdownMenuEntry(value: "ja_JP", label: "Japanese")
                         ],
                         onSelected: (str) {
                           onLanguageSelected(str ?? "");
@@ -276,3 +281,6 @@ class _MyAppState extends State<MyApp> {
     _papagaioTtsPlugin.stop();
   }
 }
+
+// TODO タイマーの開始タイミングを、喋り始めてからにする。喋り終わったら止める
+// メソッドコールが連続して起こらないようにする
