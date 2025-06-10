@@ -19,12 +19,20 @@ abstract class PapagaioTtsPlatform extends PlatformInterface {
     throw UnimplementedError('getVoices() has not been implemented.');
   }
 
-  Future<void> speak(String text) {
+  Future<List<String>> getAvailableLanguages(List<String>? filterLanguages) {
+    throw UnimplementedError('getAvailableLanguages() has not been implemented.');
+  }
+
+  Future<bool> speak(String text) {
     throw UnimplementedError('speak() has not been implemented.');
   }
 
-  Future<void> stop() {
+  Future<bool> stop() {
     throw UnimplementedError('stop() has not been implemented.');
+  }
+
+  Future<void> shutdown() {
+    throw UnimplementedError('shutdown() has not been implemented.');
   }
 
   Future<bool> getSpeakingStatus() {
@@ -51,23 +59,23 @@ abstract class PapagaioTtsPlatform extends PlatformInterface {
     throw UnimplementedError('getPitch() has not been implemented.');
   }
 
-  Future<void> setVoice(String voiceName) {
+  Future<bool> setVoice(String voiceName) {
     throw UnimplementedError('setVoice() has not been implemented.');
   }
 
-  Future<void> setLanguage(String language) {
+  Future<bool> setLanguage(String language) {
     throw UnimplementedError('setLanguage() has not been implemented.');
   }
 
-  Future<void> setRate(num rate) {
+  Future<bool> setRate(num rate) {
     throw UnimplementedError('setRate() has not been implemented.');
   }
 
-  Future<void> setVolume(num volume) {
+  Future<bool> setVolume(num volume) {
     throw UnimplementedError('setVolume() has not been implemented.');
   }
 
-  Future<void> setPitch(num pitch) {
+  Future<bool> setPitch(num pitch) {
     throw UnimplementedError('setPitch() has not been implemented.');
   }
 }

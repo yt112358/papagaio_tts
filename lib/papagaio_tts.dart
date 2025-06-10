@@ -6,13 +6,23 @@ class PapagaioTts {
     return Future<List<String>>.value(result);
   }
 
-  Future<void> speak(String text) {
-    PapagaioTtsPlatform.instance.speak(text);
-    return Future<void>.value();
+  Future<List<String>> getAvailableLanguages(List<String>? filterLanguages) {
+    var result = PapagaioTtsPlatform.instance.getAvailableLanguages(filterLanguages);
+    return Future<List<String>>.value(result);
   }
 
-  Future<void> stop() {
-    PapagaioTtsPlatform.instance.stop();
+  Future<bool> speak(String text) {
+    final result = PapagaioTtsPlatform.instance.speak(text);
+    return Future<bool>.value(result);
+  }
+
+  Future<bool> stop() {
+    final result = PapagaioTtsPlatform.instance.stop();
+    return Future<bool>.value(result);
+  }
+
+  Future<void> shutdown() {
+    PapagaioTtsPlatform.instance.shutdown();
     return Future<void>.value();
   }
 
@@ -40,28 +50,28 @@ class PapagaioTts {
     return PapagaioTtsPlatform.instance.getPitch();
   }
 
-  Future<void> setVoice(String voiceName) {
-    PapagaioTtsPlatform.instance.setVoice(voiceName);
-    return Future<void>.value();
+  Future<bool> setVoice(String voiceName) {
+    final result = PapagaioTtsPlatform.instance.setVoice(voiceName);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setLanguage(String language) {
-    PapagaioTtsPlatform.instance.setLanguage(language);
-    return Future<void>.value();
+  Future<bool> setLanguage(String language) {
+    final result = PapagaioTtsPlatform.instance.setLanguage(language);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setRate(num rate) {
-    PapagaioTtsPlatform.instance.setRate(rate);
-    return Future<void>.value();
+  Future<bool> setRate(num rate) {
+    final result = PapagaioTtsPlatform.instance.setRate(rate);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setVolume(num volume) {
-    PapagaioTtsPlatform.instance.setVolume(volume);
-    return Future<void>.value();
+  Future<bool> setVolume(num volume) {
+    final result = PapagaioTtsPlatform.instance.setVolume(volume);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setPitch(num pitch) {
-    PapagaioTtsPlatform.instance.setPitch(pitch);
-    return Future<void>.value();
+  Future<bool> setPitch(num pitch) {
+    final result = PapagaioTtsPlatform.instance.setPitch(pitch);
+    return Future<bool>.value(result);
   }
 }

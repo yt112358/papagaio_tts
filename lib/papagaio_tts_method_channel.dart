@@ -16,13 +16,32 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
     return Future<List<String>>.value(convResult);
   }
 
-  Future<void> speak(String text) async {
-    await methodChannel.invokeMethod<void>('speak', text);
+  @override
+  Future<List<String>> getAvailableLanguages(List<String>? filterLanguages) async {
+    print("getAvailable");
+    List<dynamic>? result = await methodChannel.invokeMethod<List<dynamic>>('getAvailableLanguages', filterLanguages) ?? [];
+    List<String> convResult = result.map((v) => v as String).toList();
+
+    return Future<List<String>>.value(convResult);
   }
 
-  Future<void> stop() async {
-    await methodChannel.invokeMethod<void>('stop');
+  @override
+  Future<bool> speak(String text) async {
+    final result = await methodChannel.invokeMethod<bool>('speak', text);
+    return Future<bool>.value(result);
   }
+
+  @override
+  Future<bool> stop() async {
+    final result = await methodChannel.invokeMethod<bool>('stop');
+    return Future<bool>.value(result);
+  }
+
+  Future<void> shutdown() async {
+    await methodChannel.invokeMethod<void>('shutdown');
+    return Future<void>.value();
+  }
+
 
   Future<bool> getSpeakingStatus() async {
     final result = await methodChannel.invokeMethod<bool>('getSpeakingStatus');
@@ -50,26 +69,31 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
     return Future<num>.value(result);
   }
 
-  Future<void> setVoice(String voiceName) async {
-    await methodChannel.invokeMethod<void>('setVoice', voiceName);
+  Future<bool> setVoice(String voiceName) async {
+    final result = await methodChannel.invokeMethod<bool>('setVoice', voiceName);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setLanguage(String language) async {
-    await methodChannel.invokeMethod<void>('setLanguage', language);
+  Future<bool> setLanguage(String language) async {
+    final result = await methodChannel.invokeMethod<bool>('setLanguage', language);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setRate(num rate) async {
-    await methodChannel.invokeMethod<void>('setRate', rate);
-    return Future<void>.value();
+  @override
+  Future<bool> setRate(num rate) async {
+    bool? result = await methodChannel.invokeMethod<bool>('setRate', rate);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setVolume(num volume) async {
-    await methodChannel.invokeMethod<void>('setVolume', volume);
-    return Future<void>.value();
+  @override
+  Future<bool> setVolume(num volume) async {
+    final result = await methodChannel.invokeMethod<bool>('setVolume', volume);
+    return Future<bool>.value(result);
   }
 
-  Future<void> setPitch(num pitch) async {
-    await methodChannel.invokeMethod<void>('setPitch', pitch);
-    return Future<void>.value();
+  @override
+  Future<bool> setPitch(num pitch) async {
+    final result = await methodChannel.invokeMethod<bool>('setPitch', pitch);
+    return Future<bool>.value(result);
   }
 }

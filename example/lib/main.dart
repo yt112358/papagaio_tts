@@ -16,6 +16,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<String> _voices = [];
+  List<String> _languages = [];
   final _papagaioTtsPlugin = PapagaioTts();
   bool _isSpeaking = false;
 
@@ -34,8 +35,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> checkSpeakingStatus() async {
-    Timer.periodic(Duration(milliseconds: 500), (timer) async {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       bool status = await getSpeakingStatus();
+      print("isSpeaking? $status");
       if (!status) {
         timer.cancel();
       }
@@ -44,6 +46,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> getConfigurations() async {
     List<String> voices = await _papagaioTtsPlugin.getVoices();
+    List<String> languages = await _papagaioTtsPlugin.getAvailableLanguages(<String>["en_US", "ja_JP"]);
     String currentLanguage = await _papagaioTtsPlugin.getLanguage();
     String currentVoice = await _papagaioTtsPlugin.getVoice();
     double rate = await _papagaioTtsPlugin.getRate() as double;
@@ -53,6 +56,7 @@ class _MyAppState extends State<MyApp> {
     print("current Lang $currentLanguage");
     setState(() {
       _voices = voices;
+      _languages = languages;
       _currentLanguage = currentLanguage;
       _currentVoice = currentVoice;
       _rate = rate;
@@ -63,12 +67,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> speak(String text) async {
-    String currentVoice = await _papagaioTtsPlugin.getVoice();
-    setState(() {
-      _currentVoice = currentVoice;
-    });
-    await _papagaioTtsPlugin.speak(text);
+    print("speak");
+    // String currentVoice = await _papagaioTtsPlugin.getVoice();
+    // setState(() {
+    //   _currentVoice = currentVoice;
+    // });
     checkSpeakingStatus();
+    bool start = await _papagaioTtsPlugin.speak(text);
+    print("speaking start ? $start");
   }
 
   Future<void> stop() async {
@@ -91,7 +97,6 @@ class _MyAppState extends State<MyApp> {
   Future<void> onLanguageSelected(String language) async {
     await _papagaioTtsPlugin.setLanguage(language);
     String currentVoice = await _papagaioTtsPlugin.getVoice();
-    print("currentVoice $currentVoice");
     List<String> voices = await _papagaioTtsPlugin.getVoices();
     setState(() {
       _voices = voices;
@@ -159,8 +164,10 @@ class _MyAppState extends State<MyApp> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    List<DropdownMenuEntry<String>> entry =
+    List<DropdownMenuEntry<String>> voicesEntry =
         _voices.map((v) => DropdownMenuEntry(value: v, label: v)).toList();
+
+    List<DropdownMenuEntry<String>> languagesEntry = _languages.map((v) => DropdownMenuEntry(value: v, label: v)).toList();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -207,11 +214,7 @@ class _MyAppState extends State<MyApp> {
                         menuHeight: height / 2,
                         enableFilter: false,
                         initialSelection: _currentLanguage,
-                        dropdownMenuEntries: const [
-                          DropdownMenuEntry(value: "en_US", label: "English"),
-                          DropdownMenuEntry(value: "en", label: "English 2r"),
-                          DropdownMenuEntry(value: "ja_JP", label: "Japanese")
-                        ],
+                        dropdownMenuEntries: languagesEntry,
                         onSelected: (str) {
                           onLanguageSelected(str ?? "");
                         }),
@@ -226,7 +229,7 @@ class _MyAppState extends State<MyApp> {
                         menuHeight: height / 2,
                         enableFilter: true,
                         initialSelection: _currentVoice,
-                        dropdownMenuEntries: entry,
+                        dropdownMenuEntries: voicesEntry,
                         onSelected: (str) {
                           onVoiceSelected(str ?? "");
                         }),
@@ -279,6 +282,7 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     super.dispose();
     _papagaioTtsPlugin.stop();
+    _papagaioTtsPlugin.shutdown();
   }
 }
 
@@ -287,3 +291,4 @@ class _MyAppState extends State<MyApp> {
 // 面倒だけど、利用可能言語のリストも作る
 // shutdownも体裁を整えて、IOS側にも作る
 // TESTをかく
+// 初期設定のボイス名の取り方を工夫する

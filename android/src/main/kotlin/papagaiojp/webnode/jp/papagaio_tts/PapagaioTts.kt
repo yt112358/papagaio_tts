@@ -35,8 +35,15 @@ class PapagaioTts(context: Context) {
         return result == TextToSpeech.SUCCESS
     }
 
-    fun getAvailableLanguages(): List<String> {
-        return textToSpeech.availableLanguages.map { it.displayName }
+    fun getAvailableLanguages(filterLanguages: List<String>): List<String> {
+        println("getAvailableLanguages language ${textToSpeech.availableLanguages.toList()[0]}")
+
+        val allLanguages = textToSpeech.availableLanguages.map {it.toString()}.toList()
+        if (filterLanguages.isEmpty()) {
+            return allLanguages
+        }
+
+        return filterLanguages.filter { allLanguages.contains( it ) }.toList()
     }
 
     fun getVoices(): List<String> {
@@ -51,12 +58,10 @@ class PapagaioTts(context: Context) {
 //            setLanguage(Locale.ENGLISH.language)
 //        }
         val voices: Set<Voice> = textToSpeech.voices
-        print("voices: $voices")
 
         val voiceNames: List<String> =
             voices.filter { it.locale.toString().startsWith(lang) }.map<Voice, String> { it.name }
                 .toList()
-        println("voiceNames $voiceNames")
         return voiceNames ?: emptyList()
     }
 
@@ -100,12 +105,16 @@ class PapagaioTts(context: Context) {
     }
 
     fun setLanguage(language: String): Boolean {
-        val availableLang = textToSpeech.availableLanguages;
-        println("availableLang ${availableLang}")
-        val locale: Locale = availableLang.filter { it.language == language }[0]
-        println("locale ${locale}")
-        val result = textToSpeech.setLanguage(locale)
-        return result == TextToSpeech.SUCCESS
+//        val availableLang = textToSpeech.availableLanguages;
+//        println("availableLang ${availableLang}")
+//        val locale: Locale = availableLang.filter { it.toLanguageTag() == language }[0]
+//        println("locale ${locale}")
+
+        if (textToSpeech.isLanguageAvailable(Locale(language)) == TextToSpeech.LANG_AVAILABLE) {
+            val result = textToSpeech.setLanguage(Locale(language))
+            return result == TextToSpeech.SUCCESS
+        }
+        return false
     }
 
     fun setPitch(pitch: Float): Boolean {
