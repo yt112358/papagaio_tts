@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> checkSpeakingStatus() async {
     Timer.periodic(Duration(milliseconds: 500), (timer) async {
       bool status = await getSpeakingStatus();
-      if(!status) {
+      if (!status) {
         timer.cancel();
       }
     });
@@ -50,6 +50,7 @@ class _MyAppState extends State<MyApp> {
     double volume = await _papagaioTtsPlugin.getVolume() as double;
     double pitch = await _papagaioTtsPlugin.getPitch() as double;
 
+    print("current Lang $currentLanguage");
     setState(() {
       _voices = voices;
       _currentLanguage = currentLanguage;
@@ -57,9 +58,7 @@ class _MyAppState extends State<MyApp> {
       _rate = rate;
       _volume = volume;
       _pitch = pitch;
-      _frase = currentLanguage == "en-US"
-          ? "Hello, this is test of speaking status. "
-          : "こんにちは。こちらはスピーキングのテストです。";
+      _frase = "Hello, this is test of speaking status. ";
     });
   }
 
@@ -97,7 +96,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _voices = voices;
       _currentVoice = currentVoice;
-      _frase = language == "en-US"
+      _frase = language == "en_US" || language == "en"
           ? "Hello, this is test of speaking status. "
           : "こんにちは。こちらはスピーキングのテストです。";
     });
@@ -210,6 +209,7 @@ class _MyAppState extends State<MyApp> {
                         initialSelection: _currentLanguage,
                         dropdownMenuEntries: const [
                           DropdownMenuEntry(value: "en_US", label: "English"),
+                          DropdownMenuEntry(value: "en", label: "English 2r"),
                           DropdownMenuEntry(value: "ja_JP", label: "Japanese")
                         ],
                         onSelected: (str) {
@@ -283,4 +283,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 // TODO タイマーの開始タイミングを、喋り始めてからにする。喋り終わったら止める
-// メソッドコールが連続して起こらないようにする
+// メソッドコールが連続して起こらないようにする OK
+// 面倒だけど、利用可能言語のリストも作る
+// shutdownも体裁を整えて、IOS側にも作る
+// TESTをかく

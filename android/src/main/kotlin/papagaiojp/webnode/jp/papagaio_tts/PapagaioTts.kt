@@ -10,70 +10,120 @@ import java.util.Locale
 
 class PapagaioTts(context: Context) {
     private lateinit var textToSpeech: TextToSpeech
+
     init {
         textToSpeech = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 textToSpeech.language = Locale.ENGLISH
+            } else {
+                println("ERROR: status = $status")
             }
         }
     }
 
-    fun speak(text: String): Boolean {
+    fun speak(text: String, volume: Float): Boolean {
         println("speak")
-//        val params = Bundle()
-//        params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
-//        textToSpeech.language = Locale.ENGLISH
-//        //
-//        textToSpeech.setSpeechRate(0.5f)
-//        textToSpeech.setPitch(0.5f)
-//        //textToSpeech?.volume = 1.0f
-//        // textToSpeech?.setVoice("Samantha")
-//        val result = textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, params, "utteranceId1")
-//        return result == TextToSpeech.SUCCESS
+
+        println("voice ${textToSpeech.voice}")
+        println("language ${getLanguage()}")
+        println("engine ${textToSpeech.engines}")
+        // TODO test
+
         val params = Bundle()
-        params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
+        params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume)
         val result = textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, params, "")
         return result == TextToSpeech.SUCCESS
     }
 
+    fun getAvailableLanguages(): List<String> {
+        return textToSpeech.availableLanguages.map { it.displayName }
+    }
+
     fun getVoices(): List<String> {
-        //return listOf("Samantha").toList()
+        // TODO
+
+//        println("voices initial ${textToSpeech.voices}")
+//        return listOf("en-AU-language")
+//        return listOf("Samantha").toList()
+        val lang: String = getLanguage()
+//        println("lang $lang")
+//        if (lang.isEmpty()) {
+//            setLanguage(Locale.ENGLISH.language)
+//        }
         val voices: Set<Voice> = textToSpeech.voices
-        println("voices[0] ${voices.toList()[0].locale.toLanguageTag()}")
-        val lang = getLanguage()
-        println("lang $lang")
-        val voiceNames: List<String> = voices.filter { it.locale.toString().startsWith(lang) }.map<Voice, String> { it.name }.toList()
-        println("voiceNames ${voiceNames}")
-        return voiceNames
+        print("voices: $voices")
+
+        val voiceNames: List<String> =
+            voices.filter { it.locale.toString().startsWith(lang) }.map<Voice, String> { it.name }
+                .toList()
+        println("voiceNames $voiceNames")
+        return voiceNames ?: emptyList()
     }
 
     fun getVoice(): String {
-        return textToSpeech.defaultVoice.name
+        val currentVoice = textToSpeech.voice
+        print("currentVoice $currentVoice")
+        if (currentVoice != null) {
+            return currentVoice.name
+        }
+        return textToSpeech.defaultVoice.name ?: ""
     }
 
     fun getLanguage(): String {
         // println("lang ${Locale.ENGLISH.toString()}")
-        return Locale.ENGLISH.toString()
+        if(textToSpeech.voice != null) {
+            return textToSpeech.voice.locale.language
+        }
+        return Locale.ENGLISH.language
+        //return Locale.ENGLISH.toString()
     }
-    
+
     fun getSpeakingStatus(): Boolean {
-        return textToSpeech.isSpeaking()
+        return textToSpeech.isSpeaking
     }
 
-    fun getRate(): Float {
-        return 0.5f
+//    fun getRate(): Float {
+//        return this.rate
+//    }
+//
+//    fun getPitch(): Float {
+//        return 0.5f
+//    }
+//    fun getVolume(): Float {
+//        return 1.0f
+//    }
+
+    fun setVoice(voiceName: String): Boolean {
+        val voice: Voice = textToSpeech.voices.filter { it.name == voiceName }[0]
+        val result = textToSpeech.setVoice(voice)
+        return result == TextToSpeech.SUCCESS
     }
 
-    fun getPitch(): Float {
-        return 0.5f
+    fun setLanguage(language: String): Boolean {
+        val availableLang = textToSpeech.availableLanguages;
+        println("availableLang ${availableLang}")
+        val locale: Locale = availableLang.filter { it.language == language }[0]
+        println("locale ${locale}")
+        val result = textToSpeech.setLanguage(locale)
+        return result == TextToSpeech.SUCCESS
     }
-    fun getVolume(): Float {
-        return 1.0f
+
+    fun setPitch(pitch: Float): Boolean {
+        val result = textToSpeech.setPitch(pitch)
+        return result == TextToSpeech.SUCCESS
     }
-    
-    fun setVoice(voiceName: String) {
-        val voice: Voice = textToSpeech.voices.filter { it.name == voiceName }.get(0)
-        textToSpeech.setVoice(voice)
+
+    fun setRate(rate: Float): Boolean {
+        val result = textToSpeech.setSpeechRate(rate)
+        return result == TextToSpeech.SUCCESS
+    }
+    fun stop(): Boolean {
+        val result = textToSpeech.stop()
+        return result == TextToSpeech.SUCCESS
+    }
+
+    fun shutdown() {
+       textToSpeech.shutdown()
     }
 }
 //
@@ -129,8 +179,5 @@ class PapagaioTts(context: Context) {
 //        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
 //    }
 //
-//    fun shutdown() {
-//        textToSpeech?.stop()
-//        textToSpeech?.shutdown()
-//    }
+
 //}

@@ -1,5 +1,6 @@
 package papagaiojp.webnode.jp.papagaio_tts
 
+import android.speech.tts.TextToSpeech
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -15,21 +16,17 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
     /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
     private lateinit var tts: PapagaioTts
-//  private var methodCallHandler: MethodCallHandlerImpl? = null
+    private var volume: Float = 1.0f
+    private var rate: Float = 0.5f
+    private var pitch: Float = 0.5f
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        println("onAttach")
         tts = PapagaioTts(flutterPluginBinding.applicationContext)
-        // methodCallHandler = MethodCallHandlerImpl(tts!!)
-        // methodCallHandler!!.startListening(flutterPluginBinding.binaryMessenger)
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "papagaio_tts")
         channel.setMethodCallHandler(this)
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        // print("call arg ${call.argument} ${call.argument::class.java.typeName}")
-        println("call1")
-        println("call ${call.arguments.toString()}")
         when (call.method) {
             "getSpeakingStatus" -> {
                 result.success(getSpeakingStatus())
@@ -39,16 +36,16 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(getVoices())
             }
 
+            "getAvailableLanguages" -> {
+                result.success(getAvailableLanguages())
+            }
+
             "getLanguage" -> {
-                result.success("en_US")
+                result.success(getLanguage())
             }
 
             "getVoice" -> {
-                result.success("en-AU-language")
-            }
-
-            "getSpeakingStatus" -> {
-                result.success(getSpeakingStatus())
+                result.success(getVoice())
             }
 
             "getRate" -> {
@@ -77,10 +74,10 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
                 val voice = call.arguments.toString()
                 println("setVoice ${voice}")
                 if (voice != null) {
-                    //result.success(setVoice(voice))
-                    setVoice(voice)
+                    result.success(setVoice(voice))
+                    //setVoice(voice)
                 } else {
-                    //result.success(false)
+                    result.success(false)
                 }
             }
 
@@ -107,11 +104,16 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
 
             "speak" -> {
                 val text = call.arguments.toString().toString()
+                // TODO return
                 speak(text)
             }
 
             "stop" -> {
                 result.success(stop())
+            }
+
+            "shutdown" -> {
+                shutdown()
             }
 
             else -> {
@@ -159,19 +161,19 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun speak(text: String): Boolean {
-        //Log.d(PREFIX, "text ${text})
-        //println("text ${text}")
-        return tts.speak(text)
+        return tts.speak(text, volume)
     }
 
     private fun getSpeakingStatus(): Boolean {
         return tts.getSpeakingStatus()
-        // return false
+    }
+
+    private fun getAvailableLanguages(): List<String> {
+        return tts.getAvailableLanguages()
     }
 
     private fun getVoices(): List<String> {
         return tts.getVoices()
-        //return arrayOf("Samantha", "Kyoko").toList()
     }
 
     private fun getLanguage(): String {
@@ -183,61 +185,53 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun getRate(): Float {
-        return 1.0f //tts.getVoice().getLatency()
+        return this.rate
     }
 
     private fun getPitch(): Float {
-        // return tts.getVoice().getPitch()
-        return 0.5f
+        return this.pitch
     }
 
     private fun getVolume(): Float {
-        return 1.0f
+        return this.volume
     }
 
-    private fun setVoice(name: String) {
-        //return null
-        println("setVoice ${name}")
-        tts.setVoice(name)
+    private fun setVoice(name: String): Boolean {
+        return tts.setVoice(name)
     }
 
-    private fun setLanguage(language: String) {
-        //return null
-        println("setLanguage ${language}")
+    private fun setLanguage(language: String): Boolean {
+        return tts.setLanguage(language)
     }
 
-    private fun setRate(rate: Float) {
-        //return null
-        println("setRate ${rate}")
+    private fun setRate(rate: Float): Boolean {
+        val result = tts.setRate(rate)
+        if (result) {
+            this.rate = rate
+            return true
+        }
+        return false
     }
 
-    private fun setPitch(pitch: Float) {
-        //return null
-        println("setPitch ${pitch}")
+    private fun setPitch(pitch: Float): Boolean {
+        val result = tts.setPitch(pitch)
+        if (result) {
+            this.pitch = pitch
+            return true
+        }
+        return false
     }
 
-    private fun setVolume(volume: Float) {
-        //return null
-        println("setVolume ${volume}")
+    private fun setVolume(volume: Float): Boolean {
+        this.volume = volume
+        return true
     }
 
-    private fun stop() {
-        println("stop")
+    private fun stop(): Boolean {
+        return tts.stop()
     }
 
-    // private fun setPitch(pitch: Float): Boolean {
-    //   return tts.setPitch(pitch)
-    // }
-
-    // private fun setRate(rate: Float): Boolean {
-    //   return tts.setRate(rate)
-    // }
-
-    // private fun setVolume(volume: Float): Boolean {
-    //   return tts.setVolume(volume)
-    // }
-
-    // private fun setLanguage(lang: String): Boolean {
-    //   return tts.setLanguage(lang)
-    // }
+    private fun shutdown() {
+        tts.shutdown()
+    }
 }
