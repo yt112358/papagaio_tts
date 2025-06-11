@@ -37,43 +37,52 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
     return Future<bool>.value(result);
   }
 
+  @override
   Future<void> shutdown() async {
     await methodChannel.invokeMethod<void>('shutdown');
     return Future<void>.value();
   }
 
 
+  @override
   Future<bool> getSpeakingStatus() async {
     final result = await methodChannel.invokeMethod<bool>('getSpeakingStatus');
     return Future<bool>.value(result);
   }
 
+  @override
   Future<String> getLanguage() async {
     final result = await methodChannel.invokeMethod<String>('getLanguage');
     return Future<String>.value(result);
   }
+  @override
   Future<String> getVoice() async {
     final result = await methodChannel.invokeMethod<String>('getVoice');
     return Future<String>.value(result);
   }
+  @override
   Future<num> getRate() async {
     final result = await methodChannel.invokeMethod<num>('getRate');
     return Future<num>.value(result);
   }
+  @override
   Future<num> getVolume() async {
     final result = await methodChannel.invokeMethod<num>('getVolume');
     return Future<num>.value(result);
   }
+  @override
   Future<num> getPitch() async {
     final result = await methodChannel.invokeMethod<num>('getPitch');
     return Future<num>.value(result);
   }
 
+  @override
   Future<bool> setVoice(String voiceName) async {
     final result = await methodChannel.invokeMethod<bool>('setVoice', voiceName);
     return Future<bool>.value(result);
   }
 
+  @override
   Future<bool> setLanguage(String language) async {
     final result = await methodChannel.invokeMethod<bool>('setLanguage', language);
     return Future<bool>.value(result);

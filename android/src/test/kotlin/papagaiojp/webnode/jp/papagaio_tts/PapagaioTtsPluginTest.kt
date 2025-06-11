@@ -2,6 +2,7 @@ package papagaiojp.webnode.jp.papagaio_tts
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import net.bytebuddy.implementation.MethodCall
 import org.mockito.Mockito
 import kotlin.test.Test
 
@@ -14,14 +15,24 @@ import kotlin.test.Test
  */
 
 internal class PapagaioTtsPluginTest {
-  @Test
-  fun onMethodCall_getPlatformVersion_returnsExpectedValue() {
-    val plugin = PapagaioTtsPlugin()
+//  @Test
+//  fun onMethodCall_getPlatformVersion_returnsExpectedValue() {
+//    val plugin = PapagaioTtsPlugin()
+//
+//    val call = MethodCall("getPlatformVersion", null)
+//    val mockResult: MethodChannel.Result = Mockito.mock(MethodChannel.Result::class.java)
+//    plugin.onMethodCall(call, mockResult)
+//
+//    Mockito.verify(mockResult).success("Android " + android.os.Build.VERSION.RELEASE)
+//  }
 
-    val call = MethodCall("getPlatformVersion", null)
+  @Test
+  fun onMethodCall_speak() {
+    val plugin = PapagaioTtsPlugin()
+    val call = MethodCall("speak", "Hello")
     val mockResult: MethodChannel.Result = Mockito.mock(MethodChannel.Result::class.java)
     plugin.onMethodCall(call, mockResult)
 
-    Mockito.verify(mockResult).success("Android " + android.os.Build.VERSION.RELEASE)
+    Mockito.verify(mockResult).success(true)
   }
 }
