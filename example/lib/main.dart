@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:papagaio_tts/papagaio_tts.dart';
-import 'dart:ffi';
 
 void main() {
   runApp(const MyApp());
@@ -26,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   double _volume = 1.0;
   double _pitch = 0.5;
 
-  String _frase = "Test";
+  late String _phrase;
 
   @override
   void initState() {
@@ -37,7 +36,6 @@ class _MyAppState extends State<MyApp> {
   Future<void> checkSpeakingStatus() async {
     Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       bool status = await getSpeakingStatus();
-      print("isSpeaking? $status");
       if (!status) {
         timer.cancel();
       }
@@ -53,7 +51,6 @@ class _MyAppState extends State<MyApp> {
     double volume = await _papagaioTtsPlugin.getVolume() as double;
     double pitch = await _papagaioTtsPlugin.getPitch() as double;
 
-    print("current Lang $currentLanguage");
     setState(() {
       _voices = voices;
       _languages = languages;
@@ -62,19 +59,13 @@ class _MyAppState extends State<MyApp> {
       _rate = rate;
       _volume = volume;
       _pitch = pitch;
-      _frase = "Hello, this is test of speaking status. ";
+      _phrase = "Hello, this is test of speaking status. ";
     });
   }
 
   Future<void> speak(String text) async {
-    print("speak");
-    // String currentVoice = await _papagaioTtsPlugin.getVoice();
-    // setState(() {
-    //   _currentVoice = currentVoice;
-    // });
     checkSpeakingStatus();
-    bool start = await _papagaioTtsPlugin.speak(text);
-    print("speaking start ? $start");
+    await _papagaioTtsPlugin.speak(text);
   }
 
   Future<void> stop() async {
@@ -90,7 +81,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   void onVoiceSelected(String voiceName) {
-    print("dart main ${voiceName} ${voiceName.runtimeType}");
     _papagaioTtsPlugin.setVoice(voiceName);
   }
 
@@ -101,7 +91,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _voices = voices;
       _currentVoice = currentVoice;
-      _frase = language == "en_US" || language == "en"
+      _phrase = language == "en_US" || language == "en"
           ? "Hello, this is test of speaking status. "
           : "こんにちは。こちらはスピーキングのテストです。";
     });
@@ -120,7 +110,7 @@ class _MyAppState extends State<MyApp> {
     _papagaioTtsPlugin.setPitch(pitch);
   }
 
-  void setVolume(double changeValue) {
+  void changeVolume(double changeValue) {
     double after = double.parse((_volume + changeValue).toStringAsFixed(1));
     if (after < 0) {
       after = 0.0;
@@ -133,7 +123,7 @@ class _MyAppState extends State<MyApp> {
     _papagaioTtsPlugin.setVolume(after);
   }
 
-  void setRate(double changeValue) {
+  void changeRate(double changeValue) {
     double after = double.parse((_rate + changeValue).toStringAsFixed(1));
     if (after < 0) {
       after = 0.0;
@@ -146,7 +136,7 @@ class _MyAppState extends State<MyApp> {
     _papagaioTtsPlugin.setRate(after);
   }
 
-  void setPitch(double changeValue) {
+  void changePitch(double changeValue) {
     double after = double.parse((_pitch + changeValue).toStringAsFixed(1));
     if (after < 0) {
       after = 0.0;
@@ -188,7 +178,7 @@ class _MyAppState extends State<MyApp> {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                         onPressed: (_currentVoice.isEmpty || _isSpeaking)
                             ? null
-                            : () => speak(_frase),
+                            : () => speak(_phrase),
                         child: const Text("Speak",
                             style: TextStyle(fontSize: 20))),
                     ElevatedButton(
@@ -202,7 +192,7 @@ class _MyAppState extends State<MyApp> {
                 _isSpeaking ? "Speaking" : "Waiting to speak",
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 50),
+              const SizedBox(height: 50),
               const Text("Configuration"),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -240,12 +230,12 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     SizedBox(width: width / 3, child: const Text("Speed")),
                     IconButton(
-                        onPressed: _rate > 0.2 ? () => setRate(-0.2) : null,
-                        icon: Icon(Icons.arrow_left)),
+                        onPressed: _rate > 0.1 ? () => changeRate(-0.1) : null,
+                        icon: const Icon(Icons.arrow_left)),
                     Text("$_rate"),
                     IconButton(
-                        onPressed: () => _rate < 1.0 ? setRate(0.2) : null,
-                        icon: Icon(Icons.arrow_right))
+                        onPressed: () => _rate < 1.0 ? changeRate(0.1) : null,
+                        icon: const Icon(Icons.arrow_right))
                   ]),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -253,12 +243,12 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     SizedBox(width: width / 3, child: const Text("Volume")),
                     IconButton(
-                        onPressed: _volume > 0 ? () => setVolume(-0.2) : null,
-                        icon: Icon(Icons.arrow_left)),
+                        onPressed: _volume > 0 ? () => changeVolume(-0.1) : null,
+                        icon: const Icon(Icons.arrow_left)),
                     Text("$_volume"),
                     IconButton(
-                        onPressed: _volume < 1.0 ? () => setVolume(0.2) : null,
-                        icon: Icon(Icons.arrow_right))
+                        onPressed: _volume < 1.0 ? () => changeVolume(0.1) : null,
+                        icon: const Icon(Icons.arrow_right))
                   ]),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -266,12 +256,12 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     SizedBox(width: width / 3, child: const Text("Pitch")),
                     IconButton(
-                        onPressed: () => _pitch > 0.2 ? setPitch(-0.2) : null,
-                        icon: Icon(Icons.arrow_left)),
+                        onPressed: () => _pitch > 0.1 ? changePitch(-0.1) : null,
+                        icon: const Icon(Icons.arrow_left)),
                     Text("$_pitch"),
                     IconButton(
-                        onPressed: () => _pitch < 1.0 ? setPitch(0.2) : null,
-                        icon: Icon(Icons.arrow_right))
+                        onPressed: () => _pitch < 1.0 ? changePitch(0.1) : null,
+                        icon: const Icon(Icons.arrow_right))
                   ]),
             ])),
       ),
@@ -288,7 +278,8 @@ class _MyAppState extends State<MyApp> {
 
 // TODO タイマーの開始タイミングを、喋り始めてからにする。喋り終わったら止める
 // メソッドコールが連続して起こらないようにする OK
-// 面倒だけど、利用可能言語のリストも作る
+// 面倒だけど、利用可能言語のリストも作る OK
 // shutdownも体裁を整えて、IOS側にも作る
+// IOS側に追加機能を実装する
 // TESTをかく
-// 初期設定のボイス名の取り方を工夫する
+// 初期設定のボイス名の取り方を工夫する OK

@@ -1,19 +1,13 @@
 package papagaiojp.webnode.jp.papagaio_tts
 
-import android.speech.tts.TextToSpeech
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import java.util.*
-import kotlin.reflect.typeOf
 
 /** PapagaioTtsPlugin */
 class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
     private lateinit var tts: PapagaioTts
     private var volume: Float = 1.0f
@@ -71,11 +65,9 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             "setVoice" -> {
-                // TODO
                 val voice = call.arguments.toString()
                 if (voice != null) {
                     result.success(setVoice(voice))
-                    //setVoice(voice)
                 } else {
                     result.success(false)
                 }
@@ -84,28 +76,33 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
             "setRate" -> {
                 val rate = call.arguments.toString().toFloat()
                 if (rate != null) {
-                    setRate(rate)
+                    result.success(setRate(rate))
+                } else {
+                    result.success(false)
                 }
             }
 
             "setPitch" -> {
                 val pitch = call.arguments.toString().toFloat()
                 if (pitch != null) {
-                    setPitch(pitch)
+                    result.success(setPitch(pitch))
+                } else {
+                    result.success(false)
                 }
             }
 
             "setVolume" -> {
                 val volume = call.arguments.toString().toFloat()
                 if (volume != null) {
-                    setVolume(volume)
+                    result.success(setVolume(volume))
+                } else {
+                    result.success(false)
                 }
             }
 
             "speak" -> {
                 val text = call.arguments.toString().toString()
-                // TODO return
-                speak(text)
+                result.success(speak(text))
             }
 
             "stop" -> {
@@ -120,40 +117,6 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
                 result.notImplemented()
             }
         }
-//    if (call.method == "getPlatformVersion") {
-//      result.success("Android ${android.os.Build.VERSION.RELEASE}")
-//    } else if (call.method == "getSpeakingStatus") {
-//      result.success(getSpeakingStatus())
-//    } else if (call.method == "speak") {
-//      result.success("speak")
-//    } else if (call.method == "getLanguage") {
-//      result.success("en-US")
-//    } else if (call.method == "getVoice") {
-//      result.success("Samantha")
-//    } else if (call.method == "getVoices") {
-//      println("getVoices")
-//      //result.success(arrayOf("Samantha", "Kyoko").toList())
-//      result.success(getVoices())
-//    } else if (call.method == "getRate") {
-//      result.success(0.5)
-//    } else if (call.method == "getVolume") {
-//      result.success(1.0)
-//    } else if (call.method == "getPitch") {
-//      result.success(0.5)
-//    } else if (call.method == "setLanguage") {
-//      val language = call.argument<String>("language")?.toString()
-//      result.success(language)
-//    } else if (call.method == "setVoice") {
-//      result.success("Kyoko")
-//    } else if (call.method == "setRate") {
-//      result.success(0.5)
-//    } else if (call.method == "setVolume") {
-//      result.success(0.5)
-//    } else if (call.method == "setPitch") {
-//      result.success(0.5)
-//    } else {
-//      result.notImplemented()
-//    }
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -165,7 +128,6 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun getSpeakingStatus(): Boolean {
-        println("getSpeakingStatus ${tts.getSpeakingStatus()}")
         return tts.getSpeakingStatus()
     }
 
