@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'papagaio_tts_platform_interface.dart';
@@ -17,12 +19,14 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
   }
 
   @override
-  Future<List<String>> getAvailableLanguages(List<String>? filterLanguages) async {
+  Future<List<dynamic>> getAvailableLanguages(List<String>? filterLanguages) async {
     print("getAvailable");
-    List<dynamic>? result = await methodChannel.invokeMethod<List<dynamic>>('getAvailableLanguages', filterLanguages) ?? [];
-    List<String> convResult = result.map((v) => v as String).toList();
-
-    return Future<List<String>>.value(convResult);
+    final result = await methodChannel.invokeMethod<List<dynamic>>('getAvailableLanguages', filterLanguages) ?? [[]];
+    print("Got locale ${result}");
+//     List<Locale> convResult = result.map((v) => Locale(v[0], v[1])).toList();
+// print("Conv to locale ${convResult}");
+    // return Future<List<Locale>>.value(convResult);
+    return Future<List<dynamic>>.value(result); // TODO
   }
 
   @override
@@ -72,7 +76,7 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
   }
   @override
   Future<num> getPitch() async {
-    final result = await methodChannel.invokeMethod<num>('getPitch');
+    final result = await methodChannel.invokeMethod<num?>('getPitch');
     return Future<num>.value(result);
   }
 

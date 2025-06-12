@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'papagaio_tts_method_channel.dart';
 
@@ -19,7 +21,7 @@ abstract class PapagaioTtsPlatform extends PlatformInterface {
     throw UnimplementedError('getVoices() has not been implemented.');
   }
 
-  Future<List<String>> getAvailableLanguages(List<String>? filterLanguages) {
+  Future<List<dynamic>> getAvailableLanguages(List<String>? filterLanguages) {
     throw UnimplementedError('getAvailableLanguages() has not been implemented.');
   }
 

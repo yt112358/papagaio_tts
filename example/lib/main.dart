@@ -15,17 +15,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<String> _voices = [];
-  List<String> _languages = [];
+  List<Locale> _languages = [];
   final _papagaioTtsPlugin = PapagaioTts();
   bool _isSpeaking = false;
 
-  String _currentLanguage = "";
+  Locale _currentLanguage = const Locale.fromSubtags(languageCode: "en", countryCode: "US");
   String _currentVoice = "";
   double _rate = 0.5;
   double _volume = 1.0;
   double _pitch = 0.5;
 
   late String _phrase;
+  final defaultLang = const Locale.fromSubtags(languageCode: "en", countryCode: "US");
 
   @override
   void initState() {
@@ -44,8 +45,11 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> getConfigurations() async {
     List<String> voices = await _papagaioTtsPlugin.getVoices();
-    List<String> languages = await _papagaioTtsPlugin.getAvailableLanguages(<String>["en_US", "ja_JP"]);
-    String currentLanguage = await _papagaioTtsPlugin.getLanguage();
+    List<Locale> languages = await _papagaioTtsPlugin.getAvailableLanguages(<String>["en", "ja"]);
+    print("languages $languages");
+
+    Locale currentLanguage = await _papagaioTtsPlugin.getLanguage();
+    print("currentLanguage $currentLanguage");
     String currentVoice = await _papagaioTtsPlugin.getVoice();
     double rate = await _papagaioTtsPlugin.getRate() as double;
     double volume = await _papagaioTtsPlugin.getVolume() as double;
@@ -84,14 +88,14 @@ class _MyAppState extends State<MyApp> {
     _papagaioTtsPlugin.setVoice(voiceName);
   }
 
-  Future<void> onLanguageSelected(String language) async {
+  Future<void> onLanguageSelected(Locale language) async {
     await _papagaioTtsPlugin.setLanguage(language);
     String currentVoice = await _papagaioTtsPlugin.getVoice();
     List<String> voices = await _papagaioTtsPlugin.getVoices();
     setState(() {
       _voices = voices;
       _currentVoice = currentVoice;
-      _phrase = language == "en_US" || language == "en"
+      _phrase = language.languageCode == "en"
           ? "Hello, this is test of speaking status. "
           : "こんにちは。こちらはスピーキングのテストです。";
     });
@@ -157,7 +161,7 @@ class _MyAppState extends State<MyApp> {
     List<DropdownMenuEntry<String>> voicesEntry =
         _voices.map((v) => DropdownMenuEntry(value: v, label: v)).toList();
 
-    List<DropdownMenuEntry<String>> languagesEntry = _languages.map((v) => DropdownMenuEntry(value: v, label: v)).toList();
+    List<DropdownMenuEntry<Locale>> languagesEntry = _languages.map((locale) => DropdownMenuEntry(value: locale, label: locale.toLanguageTag())).toList();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -199,14 +203,14 @@ class _MyAppState extends State<MyApp> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(width: width / 3, child: const Text("Language")),
-                    DropdownMenu<String>(
+                    DropdownMenu<Locale>(
                         width: width / 3,
                         menuHeight: height / 2,
                         enableFilter: false,
                         initialSelection: _currentLanguage,
                         dropdownMenuEntries: languagesEntry,
-                        onSelected: (str) {
-                          onLanguageSelected(str ?? "");
+                        onSelected: (locale) {
+                          onLanguageSelected(locale ?? defaultLang);
                         }),
                   ]),
               Row(
@@ -276,10 +280,12 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// TODO タイマーの開始タイミングを、喋り始めてからにする。喋り終わったら止める
+// TODO タイマーの開始タイミングを、喋り始めてからにする。喋り終わったら止める OK
 // メソッドコールが連続して起こらないようにする OK
 // 面倒だけど、利用可能言語のリストも作る OK
-// shutdownも体裁を整えて、IOS側にも作る
-// IOS側に追加機能を実装する
-// TESTをかく
-// 初期設定のボイス名の取り方を工夫する OK
+// shutdownも体裁を整えて、IOS側にも作る OK
+// IOS側に追加機能を実装する OK
+// TESTをかく TODO Unit Testがコケる
+// 初期設定のボイス名の取り方を工夫する OK]
+// IOSはen-USでAndroidはen_USなので、変換するメソッドを共通部分につける　画面上はen-USで統一 仕掛かり IOS
+// なぜか初期値の言語がセットされない

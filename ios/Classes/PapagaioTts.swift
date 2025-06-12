@@ -46,6 +46,22 @@ class PapagaioTts: NSObject, ObservableObject{
     func stop() {
         synthesizer.stopSpeaking(at: .immediate)
     }
+    
+    private func splitLocale(_ locale: String) -> [String] {
+        let substring = locale.split(separator: "-")
+        return [String(substring[0]), String(substring[1])]
+    }
+
+    func getAvailableLanguages(_ filter:[String])-> [[String]] {    // ex return: [[en, US], [ja, JP], [en, null]]
+        let voices: [AVSpeechSynthesisVoice] = AVSpeechSynthesisVoice.speechVoices()
+        let languages: [String] = [String](Set(voices.map { $0.language}))
+        let langCountries: [[String]] = languages.map { splitLocale($0) }
+        if (filter.isEmpty) {
+            return langCountries
+        }
+
+        return langCountries.filter { filter.contains($0[0]) }
+    }
 
     func getVoices()-> [String] {
         let voices: [AVSpeechSynthesisVoice] = AVSpeechSynthesisVoice.speechVoices()
@@ -58,7 +74,7 @@ class PapagaioTts: NSObject, ObservableObject{
     }
 
     func getLanguage() -> String {
-        return self.language ?? "" as! String
+        return self.language ?? "en-US"
     }
     func getVoice() -> String {
         return self.voice?.name ?? ""
@@ -73,7 +89,7 @@ class PapagaioTts: NSObject, ObservableObject{
         return self.pitch ?? 0.5 as Float
     }
 
-    func setVoice(_ voice: String) {
+    func setVoice(_ voice: String){
         if let selectedVoice: AVSpeechSynthesisVoice = AVSpeechSynthesisVoice.speechVoices().first(where: { $0.name == voice}) {
             self.voice = selectedVoice
         }
@@ -83,7 +99,8 @@ class PapagaioTts: NSObject, ObservableObject{
         self.rate = rate
     }
 
-    func setLanuguage(_ language: String) {
+    func setLanguage(_ language: String){
+        print("language \(language)")
         self.language = language
         self.voice = AVSpeechSynthesisVoice.init(language: language)
     }
@@ -92,7 +109,7 @@ class PapagaioTts: NSObject, ObservableObject{
         self.volume = volume
     }
 
-    func setPitch(_ pitch: Float) {
+    func setPitch(_ pitch: Float){
         self.pitch = pitch
     }
 }

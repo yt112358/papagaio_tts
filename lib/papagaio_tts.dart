@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'papagaio_tts_platform_interface.dart';
 
 class PapagaioTts {
@@ -6,9 +8,12 @@ class PapagaioTts {
     return Future<List<String>>.value(result);
   }
 
-  Future<List<String>> getAvailableLanguages(List<String>? filterLanguages) {
-    var result = PapagaioTtsPlatform.instance.getAvailableLanguages(filterLanguages);
-    return Future<List<String>>.value(result);
+  Future<List<Locale>> getAvailableLanguages(List<String>? filterLanguages) async {
+    List<dynamic> result = await PapagaioTtsPlatform.instance.getAvailableLanguages(filterLanguages);
+    var localeList = result.map((objList) {
+      return Locale.fromSubtags(languageCode: objList[0], countryCode: objList[1]);
+    }).toList();
+    return Future<List<Locale>>.value(localeList);
   }
 
   Future<bool> speak(String text) {
@@ -30,8 +35,10 @@ class PapagaioTts {
     return PapagaioTtsPlatform.instance.getSpeakingStatus();
   }
 
-  Future<String> getLanguage() {
-    return PapagaioTtsPlatform.instance.getLanguage();
+  Future<Locale> getLanguage() async {
+    String result = await PapagaioTtsPlatform.instance.getLanguage();
+    List<String> langCountry = result.split(RegExp("-|_"));
+    return Future<Locale>.value(Locale.fromSubtags(languageCode: langCountry[0], countryCode: langCountry[1]));
   }
 
   Future<String> getVoice() {
@@ -55,8 +62,8 @@ class PapagaioTts {
     return Future<bool>.value(result);
   }
 
-  Future<bool> setLanguage(String language) {
-    final result = PapagaioTtsPlatform.instance.setLanguage(language);
+  Future<bool> setLanguage(Locale language) {
+    final result = PapagaioTtsPlatform.instance.setLanguage(language.toLanguageTag());
     return Future<bool>.value(result);
   }
 

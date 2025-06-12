@@ -12,12 +12,19 @@ public class PapagaioTtsPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
+    case "getAvailableLanguages":
+      // TODO
+      let filter = call.arguments as! [String]
+      let convertedFilter = filter.map { $0.replacingOccurrences(of: "_", with: "-", options: .literal, range: nil) }
+      result(getAvailableLanguages(convertedFilter))
     case "getVoices":
       result(getVoices())
     case "speak":
       let text = call.arguments as! String
       speak(text)
     case "stop":
+      stop()
+    case "shutdown":
       stop()
     case "getSpeakingStatus":
       result(getSpeakingStatus())
@@ -38,22 +45,32 @@ public class PapagaioTtsPlugin: NSObject, FlutterPlugin {
     case "setVoice":
       let voice = call.arguments as! String
       setVoice(voice)
+        result(true)
     case "setRate":
       let rate = (call.arguments as! NSNumber).floatValue
       setRate(rate)
+        result(true)
     case "setLanguage":
       let language = call.arguments as! String
-      setLanuguage(language)
+      setLanguage(language)
+      result(true)
     case "setVolume":
       let volume = (call.arguments as! NSNumber).floatValue
       print("### pluginsetVolume \(volume)")
       setVolume(volume)
+        result(true)
     case "setPitch":
       let pitch = (call.arguments as! NSNumber).floatValue
       setPitch(pitch)
+        result(true)
     default:
       result(FlutterMethodNotImplemented)
     }
+  }
+
+  func getAvailableLanguages(_ filter: [String]) -> [[String]] {
+    // TODO
+    return tts.getAvailableLanguages(filter)
   }
 
   func getVoices() -> [String] {
@@ -97,12 +114,12 @@ public class PapagaioTtsPlugin: NSObject, FlutterPlugin {
     return tts.setVoice(voice)
   }
 
-  func setRate(_ rate: Float) {
+  func setRate(_ rate: Float){
     return tts.setRate(rate)
   }
 
-  func setLanuguage(_ language: String) {
-    return tts.setLanuguage(language)
+  func setLanguage(_ language: String) {
+    return tts.setLanguage(language)
   }
 
   func setVolume(_ volume: Float) {
