@@ -6,20 +6,70 @@
 // For more information about Flutter integration tests, please see
 // https://docs.flutter.dev/cookbook/testing/integration/introduction
 
+import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-
+import 'package:papagaio_tts/papagaio_tts.dart';
+import 'package:flutter/material.dart';
+import 'package:papagaio_tts_example/main.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  //IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('getPlatformVersion test', (WidgetTester tester) async {
-    // final PapagaioTts plugin = PapagaioTts();
-    // final String? version = await plugin.getPlatformVersion();
-    // // The version string depends on the host platform running the test, so
-    // // just assert that some non-empty string is returned.
-    // expect(version?.isNotEmpty, true);
-    // TODO
+  // testWidgets('getLanguage test', (WidgetTester tester) async {
+  //   final PapagaioTts plugin = PapagaioTts();
+  //   final Locale language = await plugin.getLanguage();
+  //   expect(language, const Locale("en", "US"));
+  // });
+
+  testWidgets('screen appearance test', (WidgetTester tester) async {
+    await tester.pumpWidget(const MyApp());
+    final label = find.byWidgetPredicate((Widget widget) => widget is Text && widget.data == 'Plugin example app');
+    await tester.pumpUntilFound(label);
+    expect(find.byWidgetPredicate((Widget widget) => widget is Text && widget.data == 'Plugin example app'), findsOneWidget);
+    final first = find.byWidgetPredicate((Widget widget) => widget is DropdownMenu).first;
+    await tester.pumpUntilFound(first);
+    await tester.tap(first);
+
+    final last = find.byWidgetPredicate((Widget widget) => widget is DropdownMenu).last;
+    await tester.pumpUntilFound(last);
+    await tester.tap(last);
+
+    final firstButton = find.byWidgetPredicate((Widget widget) => widget is IconButton).first;
+    await tester.pumpUntilFound(firstButton);
+    await tester.press(firstButton);
+
+    final lastButton = find.byWidgetPredicate((Widget widget) => widget is IconButton).last;
+    await tester.pumpUntilFound(lastButton);
+    await tester.press(lastButton);
+
+    // TODO 値をチェックする
+    // TODO パーツ一つずつに分ける
+    // TODO ここで落ちる　実機を繋げてやってみる
+    await binding.takeScreenshot('screenshot');
   });
 }
+
+extension TestUtilEx on WidgetTester {
+  Future<void> pumpUntilFound(
+    Finder finder, {
+    Duration timeout = const Duration(seconds: 30),
+    String description = '',
+  }) async {
+    var found = false;
+    final timer = Timer(
+      timeout,
+      () => throw TimeoutException('Pump until has timed out $description'),
+    );
+    while (!found) {
+      await pump();
+      found = any(finder);
+    }
+    timer.cancel();
+  }
+}
+// Android
+// flutter test integration_test/plugin_integration_test.dart -d emulator-5554

@@ -46,10 +46,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> getConfigurations() async {
     List<String> voices = await _papagaioTtsPlugin.getVoices();
     List<Locale> languages = await _papagaioTtsPlugin.getAvailableLanguages(<String>["en", "ja"]);
-    print("languages $languages");
 
     Locale currentLanguage = await _papagaioTtsPlugin.getLanguage();
-    print("currentLanguage $currentLanguage");
     String currentVoice = await _papagaioTtsPlugin.getVoice();
     double rate = await _papagaioTtsPlugin.getRate() as double;
     double volume = await _papagaioTtsPlugin.getVolume() as double;
