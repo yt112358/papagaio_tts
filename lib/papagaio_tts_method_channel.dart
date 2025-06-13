@@ -20,13 +20,8 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
 
   @override
   Future<List<dynamic>> getAvailableLanguages(List<String>? filterLanguages) async {
-    print("getAvailable");
     final result = await methodChannel.invokeMethod<List<dynamic>>('getAvailableLanguages', filterLanguages) ?? [[]];
-    print("Got locale ${result}");
-//     List<Locale> convResult = result.map((v) => Locale(v[0], v[1])).toList();
-// print("Conv to locale ${convResult}");
-    // return Future<List<Locale>>.value(convResult);
-    return Future<List<dynamic>>.value(result); // TODO
+    return Future<List<dynamic>>.value(result);
   }
 
   @override

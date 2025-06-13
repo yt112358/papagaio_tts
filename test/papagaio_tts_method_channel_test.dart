@@ -24,7 +24,7 @@ void main() {
           case "getVoice":
             return "Samantha";
           case "getLanguage":
-            return ["en","US"];
+            return "en-US";
           case "getVolume":
             return 1.0;
           case "getRate":
@@ -37,7 +37,7 @@ void main() {
             return true;
           case "shutdown":
             return null;
-          case "setLanugage":
+          case "setLanguage":
             return true;
           case "setVoice":
             return true;
@@ -89,7 +89,7 @@ void main() {
     await platform.shutdown();
   });
   test('setLanguage', () async {
-    expect(await platform.setLanguage("en", "US"), true);
+    expect(await platform.setLanguage("en", "US" as String?), true);
     expect(await platform.setLanguage("en", null), true);
   });
   test('setVoice', () async {
