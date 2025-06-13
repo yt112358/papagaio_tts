@@ -71,9 +71,14 @@ class PapagaioTts(context: Context) {
         return result == TextToSpeech.SUCCESS
     }
 
-    fun setLanguage(language: String): Boolean {
-        if (textToSpeech.isLanguageAvailable(Locale(language)) == TextToSpeech.LANG_AVAILABLE) {
-            val result = textToSpeech.setLanguage(Locale(language))
+    fun setLanguage(language: String, country: String): Boolean {
+        val locale = Locale(language, country)
+        val langLocale = Locale(language)
+        if (textToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+            val result = textToSpeech.setLanguage(locale)
+            return result == TextToSpeech.SUCCESS
+        } else if(textToSpeech.isLanguageAvailable(langLocale) == TextToSpeech.LANG_AVAILABLE) {
+            val result = textToSpeech.setLanguage(langLocale)
             return result == TextToSpeech.SUCCESS
         }
         return false

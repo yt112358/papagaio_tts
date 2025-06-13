@@ -56,7 +56,8 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             "setLanguage" -> {
-                val language = call.arguments.toString()
+                val language = call.arguments as? List<String>
+                println("language $language")
                 if (language != null) {
                     result.success(setLanguage(language))
                 } else {
@@ -131,7 +132,7 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
         return tts.getSpeakingStatus()
     }
 
-    private fun getAvailableLanguages(filterLanguages: List<String>): List<String> {
+    private fun getAvailableLanguages(filterLanguages: List<String>): List<List<String>> {
         return tts.getAvailableLanguages(filterLanguages)
     }
 
@@ -163,8 +164,8 @@ class PapagaioTtsPlugin : FlutterPlugin, MethodCallHandler {
         return tts.setVoice(name)
     }
 
-    private fun setLanguage(language: String): Boolean {
-        return tts.setLanguage(language)
+    private fun setLanguage(language: List<String>): Boolean {
+        return tts.setLanguage(language[0], language[1])
     }
 
     private fun setRate(rate: Float): Boolean {
