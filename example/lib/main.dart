@@ -6,6 +6,7 @@ void main() {
   runApp(const MyApp());
 }
 
+const defaultLang = Locale("en", "US");
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -19,14 +20,13 @@ class _MyAppState extends State<MyApp> {
   final _papagaioTtsPlugin = PapagaioTts();
   bool _isSpeaking = false;
 
-  Locale _currentLanguage = const Locale.fromSubtags(languageCode: "en", countryCode: "US");
+  Locale _currentLanguage = defaultLang;
   String _currentVoice = "";
   double _rate = 0.5;
   double _volume = 1.0;
   double _pitch = 0.5;
 
   late String _phrase;
-  final defaultLang = const Locale.fromSubtags(languageCode: "en", countryCode: "US");
 
   @override
   void initState() {
@@ -161,7 +161,7 @@ class _MyAppState extends State<MyApp> {
     List<DropdownMenuEntry<String>> voicesEntry =
         _voices.map((v) => DropdownMenuEntry(value: v, label: v)).toList();
 
-    List<DropdownMenuEntry<Locale>> languagesEntry = _languages.map((locale) => DropdownMenuEntry(value: locale, label: locale.toLanguageTag())).toList();
+    List<DropdownMenuEntry<Locale>> languagesEntry = _languages.map((locale) => DropdownMenuEntry(value: locale, label: "$locale")).toList();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(

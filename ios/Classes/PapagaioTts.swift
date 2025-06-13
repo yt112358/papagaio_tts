@@ -3,7 +3,7 @@ import AVFoundation
 
 class PapagaioTts: NSObject, ObservableObject{
     static let instance: PapagaioTts = PapagaioTts()
-    private var synthesizer: AVSpeechSynthesizer = AVSpeechSynthesizer()
+    var synthesizer: AVSpeechSynthesizer = AVSpeechSynthesizer()
     var voice: AVSpeechSynthesisVoice?
     var rate: Float?
     var language: String?

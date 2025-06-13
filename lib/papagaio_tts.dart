@@ -11,7 +11,7 @@ class PapagaioTts {
   Future<List<Locale>> getAvailableLanguages(List<String>? filterLanguages) async {
     List<dynamic> result = await PapagaioTtsPlatform.instance.getAvailableLanguages(filterLanguages);
     var localeList = result.map((objList) {
-      return Locale.fromSubtags(languageCode: objList[0], countryCode: objList[1]);
+      return Locale(objList[0], objList[1]);
     }).toList();
     return Future<List<Locale>>.value(localeList);
   }
@@ -38,7 +38,7 @@ class PapagaioTts {
   Future<Locale> getLanguage() async {
     String result = await PapagaioTtsPlatform.instance.getLanguage();
     List<String> langCountry = result.split(RegExp("-|_"));
-    return Future<Locale>.value(Locale.fromSubtags(languageCode: langCountry[0], countryCode: langCountry[1]));
+    return Future<Locale>.value(Locale(langCountry[0], langCountry[1]));
   }
 
   Future<String> getVoice() {
@@ -63,7 +63,7 @@ class PapagaioTts {
   }
 
   Future<bool> setLanguage(Locale language) {
-    final result = PapagaioTtsPlatform.instance.setLanguage(language.toLanguageTag());
+    final result = PapagaioTtsPlatform.instance.setLanguage("${language.languageCode}-${language.countryCode}");
     return Future<bool>.value(result);
   }
 
