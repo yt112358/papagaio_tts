@@ -29,13 +29,13 @@ class PapagaioTts(context: Context) {
         return result == TextToSpeech.SUCCESS
     }
 
-    fun getAvailableLanguages(filterLanguages: List<String>): List<String> {
-        val allLanguages = textToSpeech.availableLanguages.map {it.toString()}.toList()
+    fun getAvailableLanguages(filterLanguages: List<String>): List<List<String>> {
+        val allLanguages = textToSpeech.availableLanguages.map {it.toString().split("_")}.toList()
         if (filterLanguages.isEmpty()) {
             return allLanguages
         }
 
-        return filterLanguages.filter { allLanguages.contains( it ) }.toList()
+        return allLanguages.filter { filterLanguages.contains( it[0] ) }.toList()
     }
 
     fun getVoices(): List<String> {

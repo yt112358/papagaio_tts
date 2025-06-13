@@ -288,4 +288,4 @@ class _MyAppState extends State<MyApp> {
 // TESTをかく TODO Unit Testがコケる
 // 初期設定のボイス名の取り方を工夫する OK]
 // IOSはen-USでAndroidはen_USなので、変換するメソッドを共通部分につける　画面上はen-USで統一 仕掛かり IOS
-// なぜか初期値の言語がセットされない
+// なぜか初期値の言語がセットされない -> 持ち越し

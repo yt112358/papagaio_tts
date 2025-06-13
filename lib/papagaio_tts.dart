@@ -63,7 +63,7 @@ class PapagaioTts {
   }
 
   Future<bool> setLanguage(Locale language) {
-    final result = PapagaioTtsPlatform.instance.setLanguage("${language.languageCode}-${language.countryCode}");
+    final result = PapagaioTtsPlatform.instance.setLanguage(language.languageCode, language.countryCode);
     return Future<bool>.value(result);
   }
 

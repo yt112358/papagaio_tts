@@ -87,8 +87,12 @@ class MethodChannelPapagaioTts extends PapagaioTtsPlatform {
   }
 
   @override
-  Future<bool> setLanguage(String language) async {
-    final result = await methodChannel.invokeMethod<bool>('setLanguage', language);
+  Future<bool> setLanguage(String language, String? country) async {
+    var args = [language];
+    if (country != null) {
+      args.add(country);
+    }
+    final result = await methodChannel.invokeMethod<bool>('setLanguage', args);
     return Future<bool>.value(result);
   }
 

@@ -51,7 +51,7 @@ public class PapagaioTtsPlugin: NSObject, FlutterPlugin {
       setRate(rate)
         result(true)
     case "setLanguage":
-      let language = call.arguments as! String
+      let language = call.arguments as! [String]
       setLanguage(language)
       result(true)
     case "setVolume":
@@ -118,8 +118,11 @@ public class PapagaioTtsPlugin: NSObject, FlutterPlugin {
     return tts.setRate(rate)
   }
 
-  func setLanguage(_ language: String) {
-    return tts.setLanguage(language)
+  func setLanguage(_ language: [String]) {
+    if (language.count == 2) {
+      return tts.setLanguage("\(language[0])-\(language[1])")
+    }
+    return tts.setLanguage("\(language[0]))")
   }
 
   func setVolume(_ volume: Float) {

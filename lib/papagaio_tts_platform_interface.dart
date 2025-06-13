@@ -65,7 +65,7 @@ abstract class PapagaioTtsPlatform extends PlatformInterface {
     throw UnimplementedError('setVoice() has not been implemented.');
   }
 
-  Future<bool> setLanguage(String language) {
+  Future<bool> setLanguage(String language, String? country) {
     throw UnimplementedError('setLanguage() has not been implemented.');
   }
 

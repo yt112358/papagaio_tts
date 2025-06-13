@@ -89,7 +89,8 @@ void main() {
     await platform.shutdown();
   });
   test('setLanguage', () async {
-    expect(await platform.setLanguage("en_US"), true);
+    expect(await platform.setLanguage("en", "US"), true);
+    expect(await platform.setLanguage("en", null), true);
   });
   test('setVoice', () async {
     expect(await platform.setVoice("Samantha"), true);
