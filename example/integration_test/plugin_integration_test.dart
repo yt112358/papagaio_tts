@@ -7,6 +7,7 @@
 // https://docs.flutter.dev/cookbook/testing/integration/introduction
 
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:papagaio_tts/papagaio_tts.dart';
 import 'package:flutter/material.dart';
 import 'package:papagaio_tts_example/main.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -46,10 +48,30 @@ void main() {
     await tester.pumpUntilFound(lastButton);
     await tester.press(lastButton);
 
+
+
+//  final directory = await getApplicationDocumentsDirectory();
+  // final imagePath = '${directory.path}/screenshot.png';
+  // print("imagePath $imagePath");
+  // check
+  // final existsFile = await File(imagePath);
+  // if(await existsFile.exists()) {
+  //   existsFile.delete();
+  // }
     // TODO 値をチェックする
     // TODO パーツ一つずつに分ける
     // TODO ここで落ちる　実機を繋げてやってみる
-    await binding.takeScreenshot('screenshot');
+    await binding.convertFlutterSurfaceToImage();
+    await binding.takeScreenshot("snapshot.png");
+
+
+    // final local = Directory('./screenshots');
+    // if (!local.existsSync()) {
+    //   local.createSync();
+    // }
+    // //File('./screenshots/$name.png').writeAsBytesSync(bytes);
+    // final file = File(imagePath);
+    // await file.copy("./screenshots/capture.png");
   });
 }
 
@@ -73,3 +95,6 @@ extension TestUtilEx on WidgetTester {
 }
 // Android
 // flutter test integration_test/plugin_integration_test.dart -d emulator-5554
+// /data/user/0/papagaiojp.webnode.jp.papagaio_tts.papagaio_tts_example/app_flutter/screenshot.png
+
+//flutter drive --driver=./integration_test/test_driver.dart --target integration_test/plugin_integration_test.dart  -d emulator-5556
